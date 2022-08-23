@@ -48,18 +48,21 @@ class tass:
     def __init__(self):
         self.url = "https://tass.com/"
         self.name = "TASS RUSSIAN NEWS AGENCY"
-        self.all_links = self.get_all_links()
+        #self.all_links = self.get_all_links()
         self.categorised_urls = self.categorise_urls()
     def get_all_links(self):
-        web_page = requests.get(self.url)
+        web_page = requests.get("https://tass.com/")
         soup = BeautifulSoup(web_page.content, "html.parser")
         all_urls = []
         for link in soup.find_all('a'):
             href = str(link.get('href'))
             all_urls.append(href)
+        
+            
         return all_urls
     def categorise_urls(self):
         all_urls = self.get_all_links()
+        print(all_urls)
         politics = []
         world = []
         economy = []
@@ -109,7 +112,7 @@ class tass_news:
             self.url = url
             self.web_page = requests.get(self.url)
             self.soup = BeautifulSoup(self.web_page.content, "html.parser")
-            self.title = quote_checker(self.get_article_title())
+            self.title = quote_checker( self.get_article_title() )
             self.summary = quote_checker(self.get_article_description())
             self.text = quote_checker(self.get_article_text())
             #self.timestamp = self.get_article_timestamp()
@@ -133,7 +136,9 @@ class tass_news:
         
         try:
             result = self.soup.find(class_="news-header__lead").prettify()
-            return html_cleaner(result)
+            print(html_cleaner(result))
+            return str(html_cleaner(result))
+                                
         except Exception as e:
             print("Error:", e)
     def get_article_text(self):
@@ -174,6 +179,13 @@ class tass_news:
                 base64string = base64.b64encode(img_file.read())
 
             os.remove("temp.jpg")
+    def get_article_timestamp(x):
+            web_page = requests.get(x)
+            soup = BeautifulSoup(web_page.content, "html.parser")
+            result = soup.find(class_ = "news-header__date")
+            time = int(result.dateformat.get('time'))
+
+            datetime.datetime.utcfromtimestamp(time).strftime('%Y-%m-%d %H:%M:%S')
 
             return base64string
     def get_full_article(self):
@@ -188,9 +200,7 @@ class tass_news:
             ret += i
             ret += "\n"
         return ret
-rs=tass()
-rs.categorised_urls
-rs_nw=tass_news("https://tass.com/politics/1497283",rs.name) 
+
 
 
 
